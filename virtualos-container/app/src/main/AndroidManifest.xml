@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <application android:name="io.twoyi.TwoyiApplication" android:theme="@style/AppTheme" android:label="VirtualOS Container" android:allowBackup="true" android:supportsRtl="true" android:largeHeap="true" android:extractNativeLibs="true">
+        <activity android:name="com.virtualos.container.MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter></activity>
+        <activity android:name="io.twoyi.Render2Activity" android:theme="@style/Theme.Twoyi.FullScreen" android:exported="false" android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name="io.twoyi.ui.AboutActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name="io.twoyi.ui.SelectAppActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name="io.twoyi.ui.SettingsActivity" android:exported="false" android:screenOrientation="portrait" />
+        <service android:name="com.virtualos.container.download.RomDownloadService" android:exported="false" android:foregroundServiceType="dataSync" />
+        <provider android:name="androidx.core.content.FileProvider" android:authorities="io.twoyi.fileprovider" android:grantUriPermissions="true" android:exported="false"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/filepaths" /></provider>
+        <provider android:name="io.twoyi.provider.TwoyiDocumentsProvider" android:authorities="${applicationId}.documents" android:exported="true" android:grantUriPermissions="true" android:permission="android.permission.MANAGE_DOCUMENTS"><intent-filter><action android:name="android.content.action.DOCUMENTS_PROVIDER" /></intent-filter></provider>
+    </application>
+</manifest>
