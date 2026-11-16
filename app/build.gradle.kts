@@ -6,7 +6,7 @@ plugins {
 }
 android {
     namespace = "io.twoyi"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.virtualos.container"
         minSdk = 27
