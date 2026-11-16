@@ -25,6 +25,7 @@ jobs:
         shell: bash
         run: |
           sdkmanager_path="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          set +o pipefail
           yes | "$sdkmanager_path" --licenses >/dev/null
           "$sdkmanager_path" 'platforms;android-35' 'build-tools;35.0.0'
       - name: Fetch pinned TwoYi runtime assets
