@@ -160,11 +160,6 @@ public class UIHelper {
                 .create();
         show(chooseDialog);
     }
-                })
-                .create();
-
-        show(chooseDialog);
-    }
 
     public static void showPrivacy(Context context) {
         try {
