@@ -12,6 +12,14 @@
     <string name="first_boot_tips2">The initialization is normal, please be patient:)</string>
     <string name="first_boot_tips3">Initialization is about to complete, please wait…</string>
     <string name="boot_failed">Twoyi boot timeout!</string>
+    <string name="rootfs_extract_failed_title">Could not prepare Android</string>
+    <string name="rootfs_extract_failed">Android files could not be extracted.</string>
+    <string name="rootfs_extract_failed_message">The Android system files could not be prepared. Check that the app has enough free storage, then try again.</string>
+    <string name="boot_timeout_title">Android is taking longer to start</string>
+    <string name="boot_timeout_message">The guest did not report that it is ready within %1$d seconds. The app will stay open so you can review the boot screen. TwoYi supports Android hosts 8.1 through 12; newer host versions may not work.</string>
+    <string name="boot_timeout_status">Android did not finish starting. Review the boot screen or close this window.</string>
+    <string name="boot_timeout_keep_open">Keep open</string>
+    <string name="boot_timeout_close">Close container</string>
     <string name="about_btn">About</string>
     <string name="copy_right" translatable="false">Copyright © %1$d</string>
     <string name="help_text">Help</string>

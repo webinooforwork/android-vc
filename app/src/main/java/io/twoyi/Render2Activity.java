@@ -20,7 +20,6 @@ package io.twoyi;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -33,9 +32,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import com.cleveroad.androidmanimation.LoadingAnimationView;
 
@@ -54,6 +53,7 @@ import io.twoyi.utils.RomManager;
 public class Render2Activity extends Activity implements View.OnTouchListener {
 
     private static final String TAG = "Render2Activity";
+    private static final long BOOT_TIMEOUT_SECONDS = 120;
 
     private SurfaceView mSurfaceView;
 
@@ -160,11 +160,23 @@ public class Render2Activity extends Activity implements View.OnTouchListener {
 
             new Thread(() -> {
                 mIsExtracting.set(true);
-                RomManager.extractRootfs(getApplicationContext(), romExist, factoryRomUpdated, forceInstall, use3rdRom);
-                mIsExtracting.set(false);
+                boolean extracted;
+                try {
+                    extracted = RomManager.extractRootfs(
+                            getApplicationContext(), romExist, factoryRomUpdated, forceInstall, use3rdRom);
+                } catch (Throwable error) {
+                    Log.e(TAG, "Root filesystem extraction failed", error);
+                    extracted = false;
+                } finally {
+                    mIsExtracting.set(false);
+                }
+
+                if (!extracted || !RomManager.romExist(getApplicationContext())) {
+                    runOnUiThread(this::showRootfsFailure);
+                    return;
+                }
 
                 RomManager.initRootfs(getApplicationContext());
-
                 runOnUiThread(() -> {
                     mRootView.addView(mSurfaceView, 0);
                     showBootingProcedure();
@@ -203,25 +215,18 @@ public class Render2Activity extends Activity implements View.OnTouchListener {
         mBootLogView.setVisibility(View.VISIBLE);
         new Thread(() -> {
 
-            if (true) {
-                boolean success = false;
-                try {
-                    success = TwoyiStatusManager.getInstance().waitBoot(15, TimeUnit.SECONDS);
-                } catch (Throwable ignored) {
-                }
+            boolean success = false;
+            try {
+                success = TwoyiStatusManager.getInstance().waitBoot(
+                        BOOT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            } catch (Throwable error) {
+                Log.e(TAG, "Waiting for guest boot failed", error);
+            }
 
-                if (!success) {
-                    LogEvents.trackBootFailure(getApplicationContext());
-
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), R.string.boot_failed, Toast.LENGTH_SHORT).show());
-
-                    // waiting for track
-                    SystemClock.sleep(3000);
-
-                    finish();
-                    System.exit(0);
-                    return;
-                }
+            if (!success) {
+                LogEvents.trackBootFailure(getApplicationContext());
+                runOnUiThread(this::showBootTimeout);
+                return;
             }
 
             runOnUiThread(() -> {
@@ -229,6 +234,31 @@ public class Render2Activity extends Activity implements View.OnTouchListener {
                 mLoadingLayout.setVisibility(View.GONE);
             });
         }, "waiting-boot").start();
+    }
+
+    private void showRootfsFailure() {
+        mLoadingView.stopAnimation();
+        mLoadingText.setVisibility(View.VISIBLE);
+        mLoadingText.setText(R.string.rootfs_extract_failed);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.rootfs_extract_failed_title)
+                .setMessage(R.string.rootfs_extract_failed_message)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
+                .setOnCancelListener(dialog -> finish())
+                .show();
+    }
+
+    private void showBootTimeout() {
+        mLoadingView.stopAnimation();
+        mLoadingText.setVisibility(View.VISIBLE);
+        mLoadingText.setText(R.string.boot_timeout_status);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.boot_timeout_title)
+                .setMessage(getString(R.string.boot_timeout_message, BOOT_TIMEOUT_SECONDS))
+                .setPositiveButton(R.string.boot_timeout_keep_open, (dialog, which) -> dialog.dismiss())
+                .setNegativeButton(R.string.boot_timeout_close, (dialog, which) -> finish())
+                .setOnCancelListener(dialog -> dialog.dismiss())
+                .show();
     }
 
     @Override
