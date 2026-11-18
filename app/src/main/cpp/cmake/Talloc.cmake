@@ -11,7 +11,8 @@ else()
 endif()
 ExternalProject_Add(
         talloc
-        URL https://download.samba.org/pub/talloc/talloc-2.4.1.tar.gz
+        URL https://www.samba.org/ftp/talloc/talloc-2.4.1.tar.gz
+        URL_HASH SHA256=410a547f08557007be0e88194f218868358edc0ab98c98ba8c167930db3d33f9
         CONFIGURE_COMMAND cd ${TALLOC_SRC} && ./configure CC=${TALLOC_C_COMPILER} LD=${TALLOC_C_COMPILER} --prefix=${TALLOC_BIN} --disable-rpath --disable-python --without-gettext --cross-compile --cross-answers=${CMAKE_CURRENT_SOURCE_DIR}/talloc/cross-answers.txt
         BUILD_COMMAND cd ${TALLOC_SRC} && make
         INSTALL_COMMAND cd ${TALLOC_SRC} && mkdir -p ${TALLOC_INCLUDE_DIRS} ${TALLOC_BIN}/lib && sh -c "${CMAKE_AR} rcs ${TALLOC_STATIC_LIB} bin/default/talloc.c*.o" && cp -f talloc.h ${TALLOC_INCLUDE_DIRS}
