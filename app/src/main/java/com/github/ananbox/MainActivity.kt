@@ -30,7 +30,6 @@ import java.io.FilterInputStream
 import java.io.InputStream
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
-import java.lang.String
 import java.util.Locale
 import kotlin.concurrent.thread
 import okhttp3.OkHttpClient
@@ -219,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                 if (rootfs.exists() && !File(rootfs, "init").isFile) rootfs.deleteRecursively()
                 val cpu = Runtime.getRuntime().availableProcessors()
                 val result = P7ZipApi.executeCommand(
-                    String.format(Locale.US, "7z x -mmt=%d -aoa '%s' '-o%s'", cpu, archive.absolutePath, filesDir)
+                    java.lang.String.format(Locale.US, "7z x -mmt=%d -aoa '%s' '-o%s'", cpu, archive.absolutePath, filesDir)
                 )
                 check(result == 0 && File(rootfs, "init").isFile) {
                     "The selected archive is not a usable Ananbox rootfs (7z exit code $result)"
@@ -259,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             val uri: Uri = data.data!!
-            installRootfs { contentResolver.openInputStream(uri) }
+            installRootfs(openSource = { contentResolver.openInputStream(uri) })
         }
     }
 }
