@@ -1,17 +1,13 @@
 # VirtualOS Container
 
-This app integrates the actual [TwoYi](https://github.com/twoyi/twoyi) rootless Android system container. The dashboard starts TwoYi's `Render2Activity`; its original app-import and settings flows are available from the dashboard. TwoYi's Java/Rust app source and ARM64 support libraries are included under their upstream MPL-2.0 license.
+VirtualOS now launches the [Ananbox](https://github.com/Ananbox/ananbox) Android container engine. The dashboard opens Ananbox’s runtime activity; on first launch it asks the user to select an ARM64 or x86_64 `rootfs.7z` archive. Ananbox documents host support for Android 11 and newer and ARM64/x86_64. Its own README describes the runtime as a work in progress and notes that the container is still buggy.
 
-The GitHub Actions build fetches the pinned official TwoYi 0.5.4 release APK and extracts its `rootfs.7z` and `libtwoyi.so` into the build tree. The large rootfs and upstream runtime binary are deliberately fetched by CI and are not checked into this repository. To build locally, run `./scripts/fetch_twoyi_runtime.sh`, then open this project in Android Studio or run Gradle from the project root.
-
-## Runtime compatibility
-
-TwoYi 0.5.4 runs its Android 8.1 guest on ARM64 hosts running Android 8.1 through Android 12. This project sets minSdk 27 and packages only `arm64-v8a` to match the engine. It does not claim Android 13–16 guest support or additional guest ROM versions.
+The Ananbox engine and native renderer/proot sources are included under `app/src/main/cpp` and `app/src/main/java/com/github/ananbox`. The first-run screen can download the official ARM64 `rootfs_arm64.7z` from Ananbox v0.0.2, verifies its pinned SHA-256, and extracts it into private app storage. A file picker is also available for other compatible archives.
 
 ## Build
 
-The GitHub Actions workflow installs Android SDK 35 and builds the APK. This workspace was not built locally. The TwoYi upstream project is archived; this integration keeps its upstream runtime and native libraries intact, while removing its App Center crash/analytics upload hooks.
+GitHub Actions installs Android SDK 36, NDK 25.2, and CMake 3.22.1, prepares the pinned Boost source required by the native renderer, and builds `assembleDebug`. This project is configured for Android host API 27+ and packages ARM64 and x86_64 native libraries.
 
-## Licenses
+## Source and licensing
 
-This project’s original files are MIT licensed. TwoYi source and modifications to those files are MPL-2.0; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `THIRD_PARTY_LICENSES/`.
+The original VirtualOS project files retain their MIT license. The Ananbox source is attributed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The Ananbox repository describes itself as FOSS but does not provide a license file; check the upstream repository for licensing terms before redistributing modified Ananbox code. Native third-party components retain their in-source license notices.

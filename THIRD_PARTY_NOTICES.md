@@ -1,7 +1,5 @@
-# Third-party components
+# Third-party source notices
 
-The TwoYi application and container renderer sources in `app/src/main/java/io/twoyi`, `app/src/main/twoyi-rs`, `app/src/main/jniLibs/arm64-v8a`, and TwoYi-derived resources are from [twoyi/twoyi](https://github.com/twoyi/twoyi), licensed under Mozilla Public License 2.0. The MPL text is in `THIRD_PARTY_LICENSES/Mozilla-Public-License-2.0.txt`. Modifications to those covered source files remain under MPL-2.0.
+The Ananbox Android container app and renderer are imported from [Ananbox/ananbox](https://github.com/Ananbox/ananbox) at `850d8819fd700885c6d26f60a00b096922f95432`, with its native Anbox-derived runtime from [Ananbox/anbox](https://github.com/Ananbox/anbox) at `65d67b73d66512a586ca6696f2490049a38b91f7`. See the upstream README files and source headers for project details and per-file notices. The Ananbox application repository has no LICENSE file at the imported revision; upstream describes the project as FOSS, but does not state a formal license in the repository. No additional license is asserted here.
 
-The CI workflow fetches the official TwoYi 0.5.4 release APK and extracts `assets/rootfs.7z` and `lib/arm64-v8a/libtwoyi.so` into the build tree. Those runtime binaries are not checked into this repository. The TwoYi project reports support for Android 8.1–12 and ARM64 hosts.
-
-Other libraries retain their respective upstream licenses; the in-app About screen lists the bundled Java library notices.
+The vendored `backward-cpp` component retains its upstream license at `app/src/main/cpp/anbox/external/backward-cpp/LICENSE.txt`. Android Open Source Project source files retain their Apache-2.0 headers. Other dependencies retain their respective upstream licenses.

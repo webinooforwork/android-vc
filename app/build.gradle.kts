@@ -4,21 +4,49 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
 }
+
 android {
-    namespace = "io.twoyi"
+    namespace = "com.virtualos.container"
     compileSdk = 36
+    ndkVersion = "25.2.9519653"
+
     defaultConfig {
         applicationId = "com.virtualos.container"
         minSdk = 27
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.2.0"
-        ndk { abiFilters += "arm64-v8a" }
+        versionCode = 2
+        versionName = "0.3.0"
+        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+        externalNativeBuild {
+            cmake { targets += listOf("anbox", "proot") }
+        }
     }
-    buildFeatures { compose = true }
-    compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+
+    buildFeatures {
+        compose = true
+        viewBinding = true
+        aidl = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     kotlinOptions { jvmTarget = "17" }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
+    packaging {
+        jniLibs { useLegacyPackaging = true }
+    }
 }
+
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2025.10.00")
     implementation(composeBom)
@@ -35,19 +63,11 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.2")
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
     implementation("androidx.work:work-runtime-ktx:2.10.5")
-    implementation("org.apache.commons:commons-compress:1.28.0")
-
     implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("com.google.android.material:material:1.13.0")
-    implementation("com.github.tiann:FreeReflection:3.1.0")
-    implementation("com.github.topjohnwu.libsu:core:3.2.1")
-    implementation("com.afollestad.material-dialogs:core:0.9.6.0")
-    implementation("de.psdev.licensesdialog:licensesdialog:1.9.0")
-    implementation("org.jdeferred:jdeferred-android-aar:1.2.4")
-    implementation("com.github.clans:fab:1.6.4")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation("org.apache.commons:commons-compress:1.20")
-    implementation("org.tukaani:xz:1.5")
-    implementation("com.hzy:libp7zip:1.7.0")
-    implementation("com.cleveroad:androidmanimation:0.9.1")
+
+    implementation("com.fpliu.ndk.pkg.prefab.android.21:libpng:1.6.37")
+    implementation("com.github.hzy3774:AndroidP7zip:v1.7.2")
 }

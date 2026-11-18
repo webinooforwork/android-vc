@@ -17,24 +17,67 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Ananbox native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld autoconf automake libtool bison flex pkg-config
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Install Android SDK components
+
+      - name: Install Android SDK, NDK, and CMake
         shell: bash
         run: |
           sdkmanager_path="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           set +o pipefail
           yes | "$sdkmanager_path" --licenses >/dev/null
-          "$sdkmanager_path" 'platforms;android-36' 'build-tools;36.0.0'
-      - name: Fetch pinned TwoYi runtime assets
-        run: ./scripts/fetch_twoyi_runtime.sh
+          "$sdkmanager_path" --install \
+            'platforms;android-36' \
+            'build-tools;36.0.0' \
+            'ndk;25.2.9519653' \
+            'cmake;3.22.1'
+
+      - name: Cache Boost and Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            app/src/main/cpp/boost
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-ananbox-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties', 'app/src/main/cpp/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-ananbox-
+
+      - name: Prepare Boost
+        run: |
+          set -euo pipefail
+          boost_dir=app/src/main/cpp/boost
+          if [ -f "$boost_dir/libs/algorithm/CMakeLists.txt" ]; then
+            echo "Boost already present, skipping download"
+            exit 0
+          fi
+          rm -rf "$boost_dir"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/boost-1.83.0.tar.xz" \
+            https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
+          echo "c5a0688e1f0c05f354bbd0b32244d36085d9ffc9f932e8a18983a9908096f614  $RUNNER_TEMP/boost-1.83.0.tar.xz" | sha256sum -c -
+          mkdir -p app/src/main/cpp
+          tar -xJf "$RUNNER_TEMP/boost-1.83.0.tar.xz" -C app/src/main/cpp --strip-components=1 --one-top-level=boost
+
+      - name: Keep host Python bindings out of the proot build
+        run: |
+          swig_path="$(command -v swig || true)"
+          if [ -n "$swig_path" ]; then sudo rm -f "$swig_path"; fi
+
       - uses: gradle/gradle-build-action@v3
         with:
           gradle-version: '8.13'
           arguments: assembleDebug --stacktrace
+
       - uses: actions/upload-artifact@v4
         with:
           name: virtualos-container-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

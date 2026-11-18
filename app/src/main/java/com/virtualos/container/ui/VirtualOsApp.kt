@@ -21,15 +21,14 @@ fun VirtualOsApp() {
             Text("Android container", fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Card(shape = RoundedCornerShape(20.dp)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("TwoYi runtime", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Text("Launch the integrated Android 8.1 container. First boot extracts the root filesystem and may take several minutes.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Button(onClick = { context.startActivity(Intent(context, io.twoyi.Render2Activity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("Start Android container") }
+                    Text("Ananbox runtime", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("Launch an isolated Android container. On first launch, select a compatible Ananbox rootfs archive (.7z). The engine supports Android 11+ hosts.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Button(onClick = { context.startActivity(Intent(context, com.github.ananbox.MainActivity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("Start Android container") }
                 }
             }
-            OutlinedButton(onClick = { context.startActivity(Intent(context, io.twoyi.ui.SelectAppActivity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("Import apps into container") }
-            OutlinedButton(onClick = { context.startActivity(Intent(context, io.twoyi.ui.SettingsActivity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("Container settings") }
+            OutlinedButton(onClick = { context.startActivity(Intent(context, com.github.ananbox.SettingsActivity::class.java)) }, modifier = Modifier.fillMaxWidth()) { Text("Container settings") }
             Spacer(Modifier.weight(1f))
-            Text("TwoYi engine • ARM64 • Android host 8.1–12", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text("Ananbox engine • ARM64 / x86_64 • Android host 11+", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
