@@ -7,9 +7,9 @@ set(PROOT_C_FLAGS "-I${TALLOC_INCLUDE_DIRS} -I${PROOT_SRC} -D_GNU_SOURCE -I${UNW
 set(PROOT_LINKER_FLAGS "-L${TALLOC_BIN}/lib -L${CMAKE_BINARY_DIR} -ltalloc -lunwind_ptrace")
 # specific correct clang target to use
 if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
-    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${CMAKE_SYSTEM_VERSION}-clang)
+    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${CMAKE_ANDROID_API}-clang)
 else()
-    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${CMAKE_SYSTEM_VERSION}-clang)
+    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${CMAKE_ANDROID_API}-clang)
 endif()
 ExternalProject_Add(
         proot
