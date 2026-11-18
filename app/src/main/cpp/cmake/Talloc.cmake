@@ -3,11 +3,20 @@ set(TALLOC_SRC ${CMAKE_CURRENT_BINARY_DIR}/talloc-prefix/src/talloc)
 set(TALLOC_BIN ${CMAKE_CURRENT_BINARY_DIR}/talloc-prefix/src/talloc-build)
 set(TALLOC_STATIC_LIB ${TALLOC_BIN}/lib/libtalloc.a)
 set(TALLOC_INCLUDE_DIRS ${TALLOC_BIN}/include)
+# Keep the external Autotools projects aligned with Android's configured API.
+if(DEFINED CMAKE_ANDROID_API AND NOT CMAKE_ANDROID_API STREQUAL "")
+    set(ANANBOX_ANDROID_API ${CMAKE_ANDROID_API})
+elseif(DEFINED ANDROID_PLATFORM)
+    string(REGEX REPLACE "^android-" "" ANANBOX_ANDROID_API "${ANDROID_PLATFORM}")
+else()
+    set(ANANBOX_ANDROID_API 27)
+endif()
+
 # specific correct clang target to use
 if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
-    set(TALLOC_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${CMAKE_ANDROID_API}-clang)
+    set(TALLOC_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANANBOX_ANDROID_API}-clang)
 else()
-    set(TALLOC_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${CMAKE_ANDROID_API}-clang)
+    set(TALLOC_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${ANANBOX_ANDROID_API}-clang)
 endif()
 ExternalProject_Add(
         talloc

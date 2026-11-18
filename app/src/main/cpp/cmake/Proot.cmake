@@ -5,11 +5,20 @@ set(PROOT_SRC ${CMAKE_CURRENT_BINARY_DIR}/proot-prefix/src/proot/src)
 set(PROOT_BIN ${CMAKE_CURRENT_BINARY_DIR}/proot-prefix/src/proot-build)
 set(PROOT_C_FLAGS "-I${TALLOC_INCLUDE_DIRS} -I${PROOT_SRC} -D_GNU_SOURCE -I${UNWIND_INCLUDE_DIRS}")
 set(PROOT_LINKER_FLAGS "-L${TALLOC_BIN}/lib -L${CMAKE_BINARY_DIR} -ltalloc -lunwind_ptrace")
+# Keep the external Autotools projects aligned with Android's configured API.
+if(DEFINED CMAKE_ANDROID_API AND NOT CMAKE_ANDROID_API STREQUAL "")
+    set(ANANBOX_ANDROID_API ${CMAKE_ANDROID_API})
+elseif(DEFINED ANDROID_PLATFORM)
+    string(REGEX REPLACE "^android-" "" ANANBOX_ANDROID_API "${ANDROID_PLATFORM}")
+else()
+    set(ANANBOX_ANDROID_API 27)
+endif()
+
 # specific correct clang target to use
 if(${CMAKE_ANDROID_ARCH_ABI} STREQUAL "arm64-v8a")
-    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${CMAKE_ANDROID_API}-clang)
+    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANANBOX_ANDROID_API}-clang)
 else()
-    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${CMAKE_ANDROID_API}-clang)
+    set(PROOT_C_COMPILER ${ANDROID_TOOLCHAIN_ROOT}/bin/${CMAKE_ANDROID_ARCH_ABI}-linux-android${ANANBOX_ANDROID_API}-clang)
 endif()
 ExternalProject_Add(
         proot
